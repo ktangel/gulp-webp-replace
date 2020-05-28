@@ -1,7 +1,7 @@
 
 ## Gulp-web-replace
 
-使用 gulp-webp 转换图片后，针对CSS和Html文件进行对应资源资料的替换。
+使用 gulp-webp 转换图片后，针对CSS和Html文件进行对应资源引用的替换。
 
 ### About gulp-webp:
 
@@ -51,10 +51,12 @@ const rename = require('gulp-rename');
 
     
     function compileHtml() {
-        let options = {
-            compress: true
-        };
-        let _path = DistPaths.src.posthtml_dir;
+        let options = [
+          { match: "img[src]", attr: "src" },
+          { match: "input[src]", attr: "src" },
+          { match: "video[poster]", attr: "poster" },
+          { match: "img[data-ng-src]", attr: "data-ng-src" }
+      ];
         return gulp.src("src/**/*.{html|html}")        
         // 可以先进行一些编辑前置工作
             // .pipe(postHtml([require('posthtml-include')({
@@ -62,15 +64,41 @@ const rename = require('gulp-rename');
             //     encoding: 'utf8'
             // })]))
             // .pipe(inlineSource(options))
-            .pipe(gulpIf(config.webp,webpReplace.collector())) //在合适的位置处理webp的链接替换，再在这后面处理cdn等链接替换
+            .pipe(gulpIf(config.webp,webpReplace.collector(options))) //处理webp的引用链接，再在这后面处理cdn等链接替换
             .pipe(gulp.dest("dist"));
     }
 
 
 ```
 
+## API
 
 
+A gulp plugin inspired by [trumpet(https://github.com/tivac/trumpet).
+
+使用的trumpet插件来处理html
+
+Will prefix relative urls in `<link>`, `<script>` and `<img>` tags
+
+可以在处理html的时候传入一个对像数组，每个对像的
+
+* math css查询表达式，通过这个表达式匹配html元素 
+
+* attr 需要替换掉匹配到的html元素的属性值
+
+_____
+
+
+You can optionally pass a second argument along with the prefix string to override the default selection statements. The default config looks like this:
+
+```js
+[
+  { match: "script[src]", attr: "src" },
+  { match: "link[href]", attr: "href"},
+  { match: "img[src]", attr: "src"},
+  { match: "input[src]", attr: "src"}
+]
+```
 
 
 ## webp API
