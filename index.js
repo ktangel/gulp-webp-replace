@@ -70,7 +70,7 @@ generate.collector = function (selector) {
             file.contents = new Buffer.from(contents);
             return cb(null, file);
         } else if (extname === ".html" || extname === ".htm") {
-            let selectors = (selector && Array.isArray(selector)) || [
+            let selectors = (selector && Array.isArray(selector)) ? selector : [
                 { match: "img[src]", attr: "src" },
                 { match: "input[src]", attr: "src" },
                 { match: "video[poster]", attr: "poster" },
